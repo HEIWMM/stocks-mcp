@@ -251,7 +251,13 @@ export class TushareMCPServer {
           }
 
           case 'get_current_time': {
-            const currentTime = new Date().toLocaleString();
+            // 使用 timeapi.io，它明确支持 CORS
+            const response = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=Asia/Shanghai');
+            if (!response.ok) throw new Error('网络响应失败');
+            const data = await response.json();
+            // data.dateTime 格式通常为 "2026-03-03T10:27:19"
+            const beijingTime = new Date(data.dateTime);
+            const currentTime = beijingTime.toLocaleString('zh-CN');
             return {
               content: [
                 {
